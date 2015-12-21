@@ -84,6 +84,15 @@ Otsu's method may give us more flexibility and requires less manual effort in se
 \\
 The local threshold (Figure 4(b)) is more discerning than the global one (Figure 4(a)), which can be more or less helpful depending on the particular use case. In this case, we use a local radius of 10 pixels. Here, it's helpful because it allows us to include gray areas near the lunar terminator that the global threshold leaves out. When we count these gray areas in our illuminated area, we get a nice outline of the current phase of the moon (Figure 4(c)).
 \subsubsection*{Canny Edge Detection}
+Canny edge detection performs surprisingly poorly in this case. Using a low standard deviation parameter of $1/2$ to be more forgiving, this method fails to detect a single obvious "edge" to the moon, likely because the texture of the moon does not make for an obvious object. 
+\begin{figure}[h]
+\centering
+\subfigure[Canny Edges]{\label{fig:a}\includegraphics[scale=0.6]{canny_edges}}
+\subfigure[Filled Canny Edges]{\label{fig:b}\includegraphics[scale=0.6]{canny_filled}}
+\caption{Canny edges.}
+\end{figure}
+\\
+Instead, many points are selected as edges (Figure 5(a)). This makes it difficult to easily fill a shape, since there is no clear-cut border around the moon, but instead many small patches of potential edges. This leaves us with a poorly-filled shape (Figure 5(b)). One way to remedy this is to be more liberal in filling the "edges", or don't even consider the output to be edges, but rather some mask of illuminated area, and fill all gaps within it (as if it was a continuous edge).
 \subsubsection*{Region-based Segmentation}
 \subsubsection*{Template-matching}
 \subsection*{Challenges}
