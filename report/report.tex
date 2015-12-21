@@ -21,7 +21,7 @@ On the first attempt, 7,867 images were downloaded and 8 failed. After a second 
 \\\\
 Running similar searches for "Moon" on 12/19/15 returned 9,551 and 4,812 results, respectively, for a total of 14,363 results. After removing duplicates by ID, 12,152 images remain. Two image downloads continued to fail after multiple attempts, leaving a total of 12,150 images.
 \subsection*{Data Cleansing}
-\noindent A cursory look through the downloads yields images of highly variable quality. We consider approaches to cleaning our data to move forward in time series analysis. Not all images contain Jupiter or the Moon in detail. For example, some may be of the entire night sky, in which Jupiter may only appear as a small dot. Other images may be excessively blurry or out of focus. Some images contain two or more pictures of our desired object which have been arranged side-by side. Additional concerns include annotations and other post-processed effects. Some images are not even of the planet Jupiter (our search returned multiple results for NGC 3242, the Ghost of Jupiter nebula), or Earth's Moon in particular.
+A cursory look through the downloads yields images of highly variable quality. We consider approaches to cleaning our data to move forward in time series analysis. Not all images contain Jupiter or the Moon in detail. For example, some may be of the entire night sky, in which Jupiter may only appear as a small dot. Other images may be excessively blurry or out of focus. Some images contain two or more pictures of our desired object which have been arranged side-by side. Additional concerns include annotations and other post-processed effects. Some images are not even of the planet Jupiter (our search returned multiple results for NGC 3242, the Ghost of Jupiter nebula), or Earth's Moon in particular.
 \\\\
 We would ideally keep only the highest-quality images available to us. We must also consider alignment of our object within the images, which tends towards the center but generally varies. We don?t want to exclude zoomed-out images that may contain Jupiter?s Moons or other transient phenomena. We can judge these qualities visually by detail, sharpness, clarity, and so on; however, to judge many thousands of images visually is infeasible given time constraints and the scale of images available on the Internet.
 \\\\
@@ -46,8 +46,36 @@ Similarly, we can use region-based segmentation to select only the illuminated p
 Alternatively, we can train a classifier for all different phases of the Moon and run it on all the images. This is the most scalable approach, but requires a usable training dataset for supervised learning. A classifier may also fail easily if the image is not mostly focused on the Moon, unless it was trained with similarly noisy or unfocused data. Because the quality of our images varies siginificantly, we would need a large training set to reliably sort through these thousands of images.
 \\\\
 Template-based classification requires no training. Using the scikit-image Python library, we can define a template and search for occurrences in an image which match that template. This method is based on the cross-correlation of the template and target image (Briechle and Hanebeck 2001; J. P. Lewis 1995). We can create templates for each phase of the Moon and search each image for all possible phases of the Moon, selecting the template with the highest correlation. This requires more computational power than a classifier because we brute-force search each image as many times as we have templates, but it may be easier to implement. It also can identify occurrences of the Moon in images which do not explicitly focus on the Moon, which may be helpful given our diverse dataset.
+\pagebreak
 \section*{Analysis}
-\subsubsection*{Results}
-\subsubsection*{Challenges}
+\subsection*{Results}
+We analyze the results of the approaches described above when applied to a single sample image (Figure 1).
+\begin{figure}[h]
+\centering
+\includegraphics{sample_moon}
+\caption{A sample image of the Moon from AstroBin.}
+\end{figure}
+\subsubsection*{Simple Filtering}
+We can take a look at the histogram (Figure 2) of the image to get an idea of the pixel distribution (from 0 to 1) of the grayscale image.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.6]{hist}
+\caption{Histogram of grayscale pixel values of the sample image. Bin size was increased  to show a broader distribution because of the overwhelming number of 0 values.}
+\end{figure}
+\pagebreak
+\\
+Note the peak of low values, which can be attributed to the black background of the night sky of this sample image. By simply filtering the image to select all values above this peak, we get an impressively accurate representation of the current phase of the moon (Figure 3).
+\begin{figure}[h]
+\centering
+\includegraphics{moon_hist_filtered}
+\caption{The sample image filtered by pixels with grayscale value > 0.01.}
+\end{figure}
+\\
+This approach has many limitations. Our sample image conveniently focuses only on the moon and contains a nearly-perfect black background. Other images may contain any number of other objects and may not even contain the moon at all. Indeed, this method only works well in this well-defined case of a cropped image of a moon against a dark background.
+\subsubsection*{Otsu's Method}
+\subsubsection*{Canny Edge Detection}
+\subsubsection*{Region-based Segmentation}
+\subsubsection*{Template-matching}
+\subsection*{Challenges}
 \section*{Future Ideas}
 \end{document}
