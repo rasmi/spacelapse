@@ -1,5 +1,5 @@
 \documentclass[]{article}
-\usepackage{indentfirst, graphicx}
+\usepackage{indentfirst, graphicx, caption, subfigure}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
 \setlength\parindent{0pt}
@@ -67,12 +67,22 @@ We can take a look at the histogram (Figure 2) of the image to get an idea of th
 Note the peak of low values, which can be attributed to the black background of the night sky of this sample image. By simply filtering the image to select all values above this peak, we get an impressively accurate representation of the current phase of the moon (Figure 3).
 \begin{figure}[h]
 \centering
-\includegraphics{moon_hist_filtered}
+\includegraphics[scale=0.9]{moon_hist_filtered}
 \caption{The sample image filtered by pixels with grayscale value > 0.01.}
 \end{figure}
 \\
 This approach has many limitations. Our sample image conveniently focuses only on the moon and contains a nearly-perfect black background. Other images may contain any number of other objects and may not even contain the moon at all. Indeed, this method only works well in this well-defined case of a cropped image of a moon against a dark background.
 \subsubsection*{Otsu's Method}
+Otsu's method may give us more flexibility and requires less manual effort in selecting a threshold since it does that for us. We take two approaches: the first is a global threshold which takes into account two classes of pixels across the whole image, and the second is a local threshold (multi-Otsu thresholding) which takes into account many classes of pixels in the image by moving over portions of a certain radius. 
+\begin{figure}[h]
+\centering
+\subfigure[Global Otsu Threshold]{\label{fig:a}\includegraphics[scale=0.6]{global_otsu_moon}}
+\subfigure[Local Otsu Threshold]{\label{fig:b}\includegraphics[scale=0.6]{local_otsu_moon_classes}}
+\subfigure[Binary Local Otsu Threshold]{\label{fig:c}\includegraphics[scale=0.6]{local_otsu_moon}}
+\caption{Otsu's method thresholds.}
+\end{figure}
+\\
+The local threshold (Figure 4(b)) is more discerning than the global one (Figure 4(a)), which can be more or less helpful depending on the particular use case. In this case, we use a local radius of 10 pixels. Here, it's helpful because it allows us to include gray areas near the lunar terminator that the global threshold leaves out. When we count these gray areas in our illuminated area, we get a nice outline of the current phase of the moon (Figure 4(c)).
 \subsubsection*{Canny Edge Detection}
 \subsubsection*{Region-based Segmentation}
 \subsubsection*{Template-matching}
