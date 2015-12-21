@@ -105,6 +105,46 @@ We implement region-based segmentation by first creating an elevation map using 
 \\
 The sharp delta at the edge of the moon serves this method well, allowing it to fill a relatively accurate region of the illuminated moon. It does well in deciding when to stop filling in the moon, but it is hindered slightly by the darkness of the lava beds and craters near the terminator, leaving an uneven edge.
 \subsubsection*{Template-matching}
+For our templates to compare to images for cross-correlation matching, we turn to NASA for images of the moon at different days throughout its cycle (Figure 7). While not precise to the minute, these templates are well-spread enough to give us good approximate coverage of most images of the moon, or at least enough detail to guess the current phase.
+\begin{figure}[h]
+\centering
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/01}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/02}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/03}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/04}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/05}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/06}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/07}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/08}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/09}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/10}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/11}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/12}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/13}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/14}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/15}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/16}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/17}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/18}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/19}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/20}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/21}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/22}}
+\subfigure{\includegraphics[scale=0.18]{../templates/moon/23}}
+\caption{Templates for approximately each phase of the moon by day (via NASA).}
+\end{figure}
+\pagebreak
+\\
+Running the cross-correlation is a simple but time-consuming process because of the brute-force nature of our approach. For every AstroBin image, we cycle through every template and decide which of the 23 templates gives us the highest match. The highest match is decided simply by which correlation image has the maximum correlation value (on a scale from -1 to 1).
+\begin{figure}[h]
+\centering
+\subfigure[Sample Moon]{\label{fig:a}\includegraphics[scale=0.6]{sample_moon}}
+\subfigure[Cross-correlation]{\label{fig:b}\includegraphics[scale=0.6]{crosscorrelation}}
+\subfigure[Selected Match]{\label{fig:b}\includegraphics[scale=0.45]{template_match}}
+\caption{The result of template-matching our sample moon against NASA images.}
+\end{figure}
+\\
+Though the template-matching was run on many images, we select the cross-correlation plot (Figure 8(b)) of our sample image (Figure 8(a)) and the best match (Figure 8(c)) to analyze the effectiveness of this approach. Although the template which was selected as the best match does indeed reflect the waxing gibbous phase of the sample image, it does not appear to be the best match among the templates upon visual inspection, since the template match is closer to a quarter moon than some of the other templates are to the waxing gibbous moon. Inspection of the cross-correlation plot shows strong correlation among the lava beds and craters in the illuminated portion of the moon, but it also shows strong correlation in the dark edges of the image. This is a huge issue with this approach -- correlation must be considered for the moon phase and not for background noise. Our algorithm selects the max, and if the portion of the cross-correlation that matched the template best happened to be the night sky, that image would be chose. We set a tunable threshold parameter to reject any images with correlation below 0.5, but that does not account for the possible false-positive matching of the night sky. Different hueristics can be used to judge which template is the best match. For example, taking the mean of the cross-correlation may be a safer approach. Additionally, looking at sequences of multiple templates and choosing the strongest match in a sequence of strong matches may also help account for any false-positives. This approach also gives us confidence in the general range of the Moon's phase.
 \subsection*{Challenges}
 \section*{Future Ideas}
 \end{document}
