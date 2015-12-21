@@ -3,6 +3,10 @@ secrets.py
 data/*/*
 !data/*/*.json
 
+# LaTeX junk
+*.aux
+*.synctex.gz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
